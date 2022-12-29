@@ -1,0 +1,8 @@
+{
+  "name": "networkd",
+  "bin": "/sbin/networkd",
+  "user": "network",
+  "group": "network",
+  "fulfills": "networkd",
+  "needs_targets": []
+}

@@ -1,0 +1,8 @@
+{
+  "name": "dbus-daemon",
+  "bin": "/sbin/dbus-daemon",
+  "user": "dbus",
+  "group": "dbus",
+  "fulfills": "dbus-daemon",
+  "needs_targets": []
+}

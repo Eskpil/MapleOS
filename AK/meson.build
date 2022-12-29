@@ -1,0 +1,33 @@
+ak_sources = files(
+  'Assertions.cc',
+  'Base64.cc',
+  'DeprecatedString.cc',
+  'FloatingPointStringConversions.cc',
+  'FlyString.cc',
+  'Format.cc',
+  'FuzzyMatch.cc',
+  'GenericLexer.cc',
+  'Hex.cc',
+  'JsonParser.cc',
+  'JsonPath.cc',
+  'JsonValue.cc',
+  'LexicalPath.cc',
+  'Random.cc',
+  'StackInfo.cc',
+  'String.cc',
+  'StringBuilder.cc',
+  'StringFloatingPointConversions.cc',
+  'StringImpl.cc',
+  'StringUtils.cc',
+  'StringView.cc',
+  'Time.cc',
+  'URL.cc',
+  'URLParser.cc',
+  'UUID.cc',
+  'Utf16View.cc',
+  'Utf8View.cc',
+  'Utf8View.cc',
+  'kmalloc.cc'
+)
+
+library('ak', ak_sources, version : '0.0.1', include_directories : ak_include, soversion : '0')

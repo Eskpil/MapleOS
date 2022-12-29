@@ -1,0 +1,8 @@
+{
+  "name": "mqttd",
+  "bin": "/sbin/mqttd",
+  "user": "mqtt",
+  "group": "mqtt",
+  "fulfills": "mqtt",
+  "needs_targets": ["dbus", "dhcp"]
+}

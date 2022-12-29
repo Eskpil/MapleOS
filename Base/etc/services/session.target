@@ -1,0 +1,7 @@
+{
+    "name": "session",
+    "staged": false,
+    "needs": ["network"],
+    "fulfills": ["interface"],
+    "allows": [""]
+}

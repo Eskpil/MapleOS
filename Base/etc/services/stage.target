@@ -1,0 +1,7 @@
+{
+    "name": "stage",
+    "staged": true,
+    "needs": [],
+    "fulfills": [],
+    "allows": ["network", "session"]
+}

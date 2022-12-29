@@ -1,0 +1,11 @@
+  # qemu-system-x86_64 \
+  1 #   -M accel=kvm \
+  2 #   -nographic \
+  3 #   -m 4G \
+  4 #   -smp 4 \
+  5 #   -netdev user,id=breh \
+  6 #   -device e1000,netdev=breh \
+  7 #   -object filter-dump,id=breh,netdev=breh,file=dump.dat \
+  8 #   -kernel $KERNEL_IMAGE_PATH -append "root=/dev/sda1 rw console=ttyS0 selinux=0 init=/sbin/init" \
+  9 #   -initrd ../initrd.img \
+ 10 #   -hda ../disk.img \
