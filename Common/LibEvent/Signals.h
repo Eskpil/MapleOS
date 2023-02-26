@@ -60,24 +60,26 @@ public:
 class Signals : public Weakable<Signals>
     , public EventHandler {
     friend SignalHandler;
+    friend EventLoop;
 
 public:
+    ~Signals() override;
+
+private:
     static ErrorOr<OwnPtr<Signals>> create();
     explicit Signals();
 
     static Signals* the();
 
-    ~Signals() override;
-
-private:
     void handle_event(EventLoop::Event const&) override;
     EventLoop::Event event() override;
+    void close() override;
 
     void handle(Signal, RefPtr<SignalHandler>);
 
     HashMap<Signal, RefPtr<SignalHandler>> m_handlers;
 
-    int m_signalfd;
+    int m_signalfd { -1 };
 };
 
 }

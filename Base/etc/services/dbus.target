@@ -1,7 +1,0 @@
-{
-    "name": "dbus",
-    "staged": false,
-    "needs": [],
-    "fulfills": ["dbus-daemon"],
-    "allows": []
-}

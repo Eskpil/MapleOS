@@ -30,6 +30,7 @@ public:
 private:
     void handle_event(EventLoop::Event const&) override;
     EventLoop::Event event() override;
+    void close() override;
 
     int m_sockfd;
 };

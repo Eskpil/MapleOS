@@ -30,7 +30,7 @@ ErrorOr<NonnullRefPtr<Timer>> Timer::create_single_shot(Time const& time)
     return timer;
 }
 
-ErrorOr<NonnullRefPtr<Timer>> Timer::create_repeating(Time const& time)
+ErrorOr<NonnullRefPtr<Timer>> Timer::create_repeating(Time const& time, bool instant)
 {
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
@@ -47,7 +47,12 @@ ErrorOr<NonnullRefPtr<Timer>> Timer::create_repeating(Time const& time)
     };
     memset(&ispec, 0, sizeof(ispec));
 
-    ispec.it_value = timespec;
+    if (!instant)
+        ispec.it_value = timespec;
+    else
+        // NOTE: We must set the it_value so the timerfd knows it has to start.
+        ispec.it_value.tv_nsec = 1;
+
     ispec.it_interval = timespec;
 
     if (timerfd_settime(timerfd, 0, &ispec, nullptr) == -1) {
@@ -70,7 +75,7 @@ Timer::Timer(Kind const& kind, Time const& time, int const& timerfd)
 
 Timer::~Timer()
 {
-    close(m_timerfd);
+    ::close(m_timerfd);
 }
 
 void Timer::handle_event(EventLoop::Event const& event)
@@ -83,15 +88,15 @@ void Timer::handle_event(EventLoop::Event const& event)
             on_action();
 
         if (m_kind == Kind::SingleShot) {
-            auto success_or_error = EventLoop::the()->ctl(this, EventLoop::Action::Del);
-            if (success_or_error.is_error()) {
-                outln("Failed to delete event: {}", success_or_error.release_error());
-                return;
-            }
-            close(m_timerfd);
-            return;
+            close();
         }
     }
+}
+
+void Timer::close()
+{
+    (void)MUST(EventLoop::the()->ctl(this, EventLoop::Action::Del));
+    ::close(m_timerfd);
 }
 
 EventLoop::Event Timer::event()

@@ -14,6 +14,7 @@ class EventHandler;
 
 // NOTE: This event loop is primarily based on epoll.
 class EventLoop : public Weakable<EventLoop> {
+
 public:
     static constexpr size_t MAX_EVENTS = 512;
 
@@ -46,13 +47,12 @@ public:
     };
 
     static EventLoop* the();
-
     static ErrorOr<OwnPtr<EventLoop>> create();
-
     explicit EventLoop(int const&);
 
     ErrorOr<bool> ctl(EventHandler*, Action);
 
+    [[noreturn]] void exit(int);
     int exec();
 
     ~EventLoop();
@@ -66,8 +66,8 @@ private:
 class EventHandler {
 public:
     virtual void handle_event(EventLoop::Event const&);
-
     virtual EventLoop::Event event();
+    virtual void close();
 
     virtual ~EventHandler() = default;
 };

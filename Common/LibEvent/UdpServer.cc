@@ -87,6 +87,11 @@ void UdpServer::handle_event(EventLoop::Event const& event)
     }
 }
 
+void UdpServer::close()
+{
+    ::close(m_sockfd);
+}
+
 EventLoop::Event UdpServer::event()
 {
     EventLoop::Event event { 0 };

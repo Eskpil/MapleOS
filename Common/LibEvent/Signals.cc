@@ -38,7 +38,8 @@ Signals::Signals()
 
 Signals::~Signals()
 {
-    close(m_signalfd);
+    MUST(EventLoop::the()->ctl(this, EventLoop::Action::Del));
+    ::close(m_signalfd);
 }
 
 Signals* Signals::the()
@@ -63,9 +64,19 @@ void Signals::handle_event(EventLoop::Event const& event)
         }
 
         auto handler = m_handlers.get((Signal)siginfo.ssi_signo).value_or(nullptr);
+        if (!handler && (Signal)siginfo.ssi_signo == Signal::INT) {
+            outln("gracefully exiting the eventloop");
+            EventLoop::the()->exit(1);
+        }
+
         if (!handler) {
             outln("no handler for signal: {} but we still got if for some reason", siginfo.ssi_signo);
             VERIFY_NOT_REACHED();
+        }
+
+        if (!handler->on_action && (Signal)siginfo.ssi_signo == Signal::INT) {
+            outln("gracefully exiting the eventloop, but maybe you wanted to install your own on_action callback for this.");
+            EventLoop::the()->exit(1);
         }
 
         if (!handler->on_action) {
@@ -77,24 +88,36 @@ void Signals::handle_event(EventLoop::Event const& event)
     }
 }
 
+void Signals::close()
+{
+    (void)MUST(EventLoop::the()->ctl(this, EventLoop::Action::Del));
+    ::close(m_signalfd);
+}
+
 EventLoop::Event Signals::event()
 {
     EventLoop::Event event { 0 };
 
-    sigset_t mask;
-
-    sigemptyset(&mask);
-    for (auto const& pair : m_handlers) {
-        sigaddset(&mask, (int)pair.key);
-    }
-
-    if (sigprocmask(SIG_BLOCK, &mask, nullptr) == -1) {
-        VERIFY_NOT_REACHED();
-    }
-
-    m_signalfd = signalfd(-1, &mask, 0);
     if (m_signalfd == -1) {
-        VERIFY_NOT_REACHED();
+        sigset_t mask;
+
+        sigemptyset(&mask);
+
+        sigaddset(&mask, (int)Signal::INT);
+
+        for (auto const& pair : m_handlers) {
+            if (pair.key != Signal::INT)
+                sigaddset(&mask, (int)pair.key);
+        }
+
+        if (sigprocmask(SIG_BLOCK, &mask, nullptr) == -1) {
+            VERIFY_NOT_REACHED();
+        }
+
+        m_signalfd = signalfd(-1, &mask, 0);
+        if (m_signalfd == -1) {
+            VERIFY_NOT_REACHED();
+        }
     }
 
     event.events = EventLoop::Event::Kind::EPOLLIN | EventLoop::Event::Kind::EPOLLET;

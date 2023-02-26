@@ -17,7 +17,7 @@ public:
     };
 
     static ErrorOr<NonnullRefPtr<Timer>> create_single_shot(Time const&);
-    static ErrorOr<NonnullRefPtr<Timer>> create_repeating(Time const&);
+    static ErrorOr<NonnullRefPtr<Timer>> create_repeating(Time const&, bool instant = true);
 
     explicit Timer(Kind const&, Time const&, int const&);
 
@@ -29,6 +29,7 @@ protected:
 private:
     void handle_event(EventLoop::Event const&) override;
     EventLoop::Event event() override;
+    void close() override;
 
     Kind m_kind;
     int m_timerfd;

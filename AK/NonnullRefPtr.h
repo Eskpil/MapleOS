@@ -210,9 +210,9 @@ public:
         return m_ptr == other;
     }
 
-private:
-    NonnullRefPtr() = delete;
+    NonnullRefPtr() = default;
 
+private:
     ALWAYS_INLINE RETURNS_NONNULL T* as_nonnull_ptr() const
     {
         VERIFY(m_ptr);

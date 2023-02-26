@@ -97,6 +97,8 @@ public:
     [[nodiscard]] DeprecatedString to_deprecated_string() const;
     static ErrorOr<String> from_deprecated_string(DeprecatedString const&);
 
+    explicit String(NonnullRefPtr<Detail::StringData>);
+
 private:
     // NOTE: If the least significant bit of the pointer is set, this is a short string.
     static constexpr uintptr_t SHORT_STRING_FLAG = 1;
@@ -110,7 +112,6 @@ private:
         u8 storage[MAX_SHORT_STRING_BYTE_COUNT] = { 0 };
     };
 
-    explicit String(NonnullRefPtr<Detail::StringData>);
     explicit String(ShortString);
 
     union {

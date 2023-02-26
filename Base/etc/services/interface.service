@@ -1,7 +1,0 @@
-{
-  "name": "interface",
-  "bin": "/usr/bin/interface",
-  "user": "interface",
-  "group": "interface",
-  "fulfills": "interface"
-}

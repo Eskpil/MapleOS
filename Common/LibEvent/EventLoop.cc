@@ -81,6 +81,17 @@ int EventLoop::exec()
     }
 }
 
+void EventLoop::exit(int code)
+{
+    for (auto handler : m_handlers) {
+        handler.value->close();
+    }
+
+    close(m_epollfd);
+
+    ::exit(code);
+}
+
 ErrorOr<bool> EventLoop::ctl(EventHandler* handler, EventLoop::Action action)
 {
     auto event = handler->event();
@@ -102,6 +113,11 @@ ErrorOr<bool> EventLoop::ctl(EventHandler* handler, EventLoop::Action action)
 // its virtuals. If they have not this will crash the program,
 // and it is easy to see why.
 void EventHandler::handle_event(EventLoop::Event const&)
+{
+    VERIFY_NOT_REACHED();
+}
+
+void EventHandler::close()
 {
     VERIFY_NOT_REACHED();
 }

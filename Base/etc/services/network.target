@@ -1,7 +1,0 @@
-{
-    "name": "network",
-    "staged": false,
-    "needs": ["dbus"],
-    "fulfills": ["networkd"],
-    "allows": []
-}

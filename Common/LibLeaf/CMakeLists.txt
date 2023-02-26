@@ -1,11 +1,11 @@
 include_directories(..)
 
 SET(SOURCES
-        LeafPacket.cc
+        Object.cc
         )
 
 SET(HEADERS
-        LeafPacket.h
+        Object.h
         )
 
 add_library(LibLeaf ${SOURCES} ${HEADERS})

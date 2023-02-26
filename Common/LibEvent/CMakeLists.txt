@@ -7,6 +7,7 @@ SET(SOURCES
         TcpServer.cc
         TcpStream.cc
         Signals.cc
+        Pidfd.cc
         )
 
 SET(HEADERS
@@ -17,6 +18,7 @@ SET(HEADERS
         SocketType.h
         TcpStream.h
         Signals.h
+        Pidfd.h
         )
 
 add_library(LibEvent ${SOURCES} ${HEADERS})

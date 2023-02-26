@@ -27,13 +27,32 @@ TcpServer::TcpServer(SocketType const& socket_type, int const& sockfd)
 {
     VERIFY(EventLoop::the());
     MUST(EventLoop::the()->ctl(this, EventLoop::Action::Add));
+
+    m_address = (Address*)malloc(sizeof(Address));
 }
 
 TcpServer::~TcpServer()
 {
     // We could have closed earlier because of a signal or some other reason.
     if (m_sockfd != -1)
-        MUST(close());
+        close();
+
+    free(m_address);
+}
+
+ErrorOr<bool> TcpServer::bind()
+{
+    VERIFY(m_address);
+
+    switch (socket_type()) {
+    case SocketType::Local:
+        return bind(m_address->as_path);
+    case SocketType::IPv4:
+        return bind(m_address->as_ipv4.addr, m_address->as_ipv4.port);
+    case SocketType::IPv6:
+        // FIXME: Implement IPV6
+        VERIFY_NOT_REACHED();
+    }
 }
 
 ErrorOr<bool> TcpServer::bind(LexicalPath const& path)
@@ -85,22 +104,6 @@ ErrorOr<bool> TcpServer::bind(IPv6Address const& ip, uint16_t const& port)
     return true;
 }
 
-ErrorOr<bool> TcpServer::close()
-{
-    // NOTE: It could be that the socket is closed because of a previous call
-    // but for example reference counting tries to close us. Or signal handlers.
-    if (m_sockfd == -1)
-        return false;
-
-    TRY(EventLoop::the()->ctl(this, EventLoop::Action::Del));
-
-    ::close(m_sockfd);
-
-    m_sockfd = -1;
-
-    return true;
-}
-
 ErrorOr<bool> TcpServer::listen() const
 {
     if (::listen(m_sockfd, 50) == -1) {
@@ -108,6 +111,21 @@ ErrorOr<bool> TcpServer::listen() const
     }
 
     return true;
+}
+
+void TcpServer::set_address(IPv4Address addr, u16 port)
+{
+    VERIFY(m_socket_type == SocketType::IPv4);
+
+    m_address->as_ipv4.port = port;
+    m_address->as_ipv4.addr = addr;
+}
+
+void TcpServer::set_address(LexicalPath const path)
+{
+    VERIFY(m_socket_type == SocketType::Local);
+
+    m_address->as_path = path;
 }
 
 void TcpServer::handle_event(EventLoop::Event const& event)
@@ -140,11 +158,22 @@ void TcpServer::handle_event(EventLoop::Event const& event)
             return;
         }
 
-        RefPtr<TcpStream> stream = adopt_ref(*new TcpStream(streamfd));
+        NonnullRefPtr<TcpStream> stream = adopt_ref(*new TcpStream(streamfd));
 
         if (on_connection)
             on_connection(stream);
     }
+}
+
+void TcpServer::close()
+{
+    outln("TcpServer::close");
+    // NOTE: It could be that the socket is closed because of a previous call
+    // but for example reference counting tries to close us. Or signal handlers.
+    MUST(EventLoop::the()->ctl(this, EventLoop::Action::Del));
+
+    shutdown(m_sockfd, 0);
+    ::close(m_sockfd);
 }
 
 EventLoop::Event TcpServer::event()

@@ -1,9 +1,0 @@
-{
-    "name": "mdnsd",
-    "bin": "/sbin/mdnsd",
-    "user": "mdns",
-    "group": "dns",
-    "user": "dns",
-    "fulfills": "mdns",
-    "needs_targets": [""]
-}

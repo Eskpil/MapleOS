@@ -194,7 +194,7 @@ ErrorOr<bool> DhcpClient::handle_ack(DhcpPacket const& packet, ParsedDhcpOptions
     return true;
 }
 
-ErrorOr<bool> DhcpClient::discover_for_iface(RefPtr<Interface> iface)
+ErrorOr<bool> DhcpClient::discover_for_iface(RefPtr<Interface> const& iface)
 {
     auto transaction_id = get_random<u32>();
 

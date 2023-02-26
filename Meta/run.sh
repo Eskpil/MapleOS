@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 if [ -d "../Build" ]
 then
   echo "Found and already existing build, building once again to ensure we have everything."
@@ -33,7 +35,6 @@ KERNEL_IMAGE_PATH=../Thirdparty/linux/kernel.img
 
 echo "Using Kernel: $KERNEL_IMAGE_PATH"
 
-
 qemu-system-x86_64 \
   -m 4G \
   -smp 4 \
@@ -51,13 +52,13 @@ qemu-system-x86_64 \
   -device ich9-ahci,bus=bridge3 \
   -drive file=../disk.img,format=qcow2,index=0,media=disk,id=disk \
   -qmp unix:qmp-sock,server,nowait \
-  -cpu max,-x2apic \
+  -enable-kvm \
+  -cpu max \
   -name MapleOS \
   -d guest_errors \
   -usb \
   -chardev qemu-vdagent,clipboard=on,mouse=off,id=vdagent,name=vdagent \
   -device virtserialport,chardev=vdagent,nr=1 \
-  -enable-kvm \
   -object filter-dump,id=hue,netdev=breh,file=e1000.pcap \
   -netdev user,id=breh \
   -device e1000,netdev=breh \

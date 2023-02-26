@@ -3,4 +3,4 @@ set(HEADERS)
 
 add_executable(interface ${SOURCES} ${HEADERS})
 
-target_link_libraries(interface LibAK LibEvent)
+target_link_libraries(interface LibAK LibEvent LibLeaf)

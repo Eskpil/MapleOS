@@ -110,6 +110,9 @@ ErrorOr<bool> Service::start() {
         // we are the child (success)
         // TODO: Implement priority with the <sched.h> module.
 
+        user_id = 0;
+        group_id = 0;
+
         if (setgid(group_id) == -1) {
             return Error::from_errno(errno);
         }

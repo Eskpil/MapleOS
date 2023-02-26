@@ -1,8 +1,0 @@
-{
-  "name": "resolved",
-  "bin": "/sbin/resolved",
-  "user": "resolve",
-  "group": "resolve",
-  "fulfills": "dns",
-  "needs_targets": ["dhcp"]
-}

@@ -30,7 +30,7 @@ public:
     static ErrorOr<NonnullRefPtr<DhcpClient>> create();
     DhcpClient();
 
-    ErrorOr<bool> discover_for_iface(RefPtr<Interface>);
+    ErrorOr<bool> discover_for_iface(RefPtr<Interface> const&);
 
     ~DhcpClient();
 
